@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import VueResource from 'vue-resource'
 import iview from 'iview'
 import 'iview/dist/styles/iview.css'
 
@@ -7,6 +8,7 @@ import * as router from './router'
 import store from './store'
 
 Vue.use(iview)
+Vue.use(VueResource)
 
 Vue.config.productionTip = false;
 store.dispatch('initRoute');

@@ -3,3 +3,14 @@ body {
   height: 100%;
   width: 100%;
 }
+
+[type=reset],
+[type=submit],
+button,
+html [type=button] {
+  margin: 5px;
+}
+
+.ivu-input:read-only {
+  background-color: gainsboro;
+}

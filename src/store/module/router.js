@@ -100,7 +100,7 @@ export default {
       let aRoute = router.getRouter(route);
       if (aRoute) {
         if (!hasRouter(state, aRoute)) {
-          aRoute.key = route.generateKey();
+          aRoute.key = router.generateKey();
           state.routes.push(aRoute);
           ROUTE_LIST.list = state.routes;
         }

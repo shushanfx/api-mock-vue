@@ -33,21 +33,6 @@ export const homeRoute = {
 }
 
 export const routes = [homeRoute, {
-  path: '/domain',
-  name: 'domain',
-  label: '域名管理',
-  icon: 'md-tennisball',
-  component: Base,
-  children: [{
-    path: 'list',
-    name: 'domain-list',
-    label: '域名列表',
-    icon: 'md-tennisball',
-    component: () => {
-      return import('../views/v-domain-list')
-    }
-  }]
-}, {
   path: '/project',
   name: 'project',
   label: '项目管理',
@@ -77,12 +62,23 @@ export const topRoutes = [homeRoute, {
   name: 'usercenter',
   label: '个人中心',
   icon: 'md-contact',
-  component: Home
+  component: () => {
+    return import("../views/v-user");
+  }
 }]
 
 export const allRoutes = [
   ...routes,
-  ...topRoutes
+  ...topRoutes,
+  {
+    path: '/console/:projectID',
+    name: 'console',
+    label: '控制台',
+    icon: 'md-contact',
+    component: () => {
+      return import("../views/v-console");
+    }
+  }
 ]
 
 handleParent(routes);
