@@ -93,11 +93,11 @@ export default {
               h(
                 "Tag",
                 {
-                  style: {
-                    display: params.row.isBefore ? "" : "none"
-                  },
                   props: {
-                    color: "success"
+                    color:
+                      params.row.isBefore && params.row.onBefore
+                        ? "success"
+                        : "gray"
                   }
                 },
                 "前置"
@@ -105,11 +105,11 @@ export default {
               h(
                 "Tag",
                 {
-                  style: {
-                    display: params.row.isContent ? "" : "none"
-                  },
                   props: {
-                    color: "success"
+                    color:
+                      params.row.isContent && params.row.content
+                        ? "success"
+                        : "gray"
                   }
                 },
                 "数据"
@@ -117,11 +117,11 @@ export default {
               h(
                 "Tag",
                 {
-                  style: {
-                    display: params.row.isProxy ? "" : "none"
-                  },
                   props: {
-                    color: "success"
+                    color:
+                      params.row.isProxy && params.row.proxy
+                        ? "success"
+                        : "gray"
                   }
                 },
                 "代理"
@@ -129,11 +129,23 @@ export default {
               h(
                 "Tag",
                 {
-                  style: {
-                    display: params.row.isFilter ? "" : "none"
-                  },
                   props: {
-                    color: "success"
+                    color:
+                      params.row.isBeforeRequest && params.row.onBeforeRequest
+                        ? "success"
+                        : "gray"
+                  }
+                },
+                "抓取前"
+              ),
+              h(
+                "Tag",
+                {
+                  props: {
+                    color:
+                      params.row.isFilter && params.row.filter
+                        ? "success"
+                        : "gray"
                   }
                 },
                 "后置"

@@ -171,6 +171,37 @@
         <FormItem v-if="innerEntity.isProxy" style="margin-top: -20px;">
           <Input type="text" v-model="innerEntity.proxy" placeholder="抓取代理，如：10.129.174.101:8002"/>
         </FormItem>
+        <FormItem label="抓取配置">
+          <i-switch
+            v-model="innerEntity.isBeforeRequest"
+            size="small"
+            :true-value="1"
+            :false-value="0"
+          />
+          <i style="margin-left: 10px;">抓取配置已生成，但执行抓取，允许修改抓取配置</i>
+          <Button
+            style="position: absolute; top: 0; right: -6px;"
+            type="default"
+            size="small"
+            icon="ios-information-circle"
+            v-if="innerEntity.isBeforeRequest"
+            @click="isShowBeforeRequestTip = !isShowBeforeRequestTip"
+          ></Button>
+        </FormItem>
+        <FormItem
+          v-if="innerEntity.isBeforeRequest && isShowBeforeRequestTip"
+          style="margin-top: -20px;"
+        >
+          <ui-edit-tip :show-options="true"/>
+        </FormItem>
+        <FormItem v-if="innerEntity.isBeforeRequest" style="margin-top: -20px;">
+          <ace-editor
+            style="border: 1px solid #ccc;"
+            v-model="innerEntity.onBeforeRequest"
+            lang="javascript"
+            height="300"
+          ></ace-editor>
+        </FormItem>
         <FormItem label="后置操作" style="position:relative">
           <i-switch v-model="innerEntity.isFilter" size="small" :true-value="1" :false-value="0"/>
           <i style="margin-left: 10px;">抓取成功之后对数据进行进一步处理</i>
@@ -227,6 +258,7 @@ export default {
       innerEntity: {},
       isShowBeforeTip: false,
       isShowFilterTip: false,
+      isShowBeforeRequestTip: false,
       dataTypeList: [
         { key: "json", text: "JSON" },
         { key: "javascript", text: "javascript" },
@@ -280,7 +312,9 @@ export default {
         project: this.projectID,
         type: "json",
         isNotRedirect: 0,
-        isNotTunnelHeader: 0
+        isNotTunnelHeader: 0,
+        isBeforeRequest: 0,
+        onBeforeRequest: ""
       };
     }
   },
