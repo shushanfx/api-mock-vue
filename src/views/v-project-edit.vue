@@ -62,7 +62,11 @@ export default {
   data() {
     let me = this;
     return {
-      innerEntity: {},
+      innerEntity: {
+        projectID: "",
+        name: "",
+        description: ""
+      },
       columns: [
         {
           title: "域名",

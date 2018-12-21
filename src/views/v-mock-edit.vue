@@ -178,7 +178,7 @@
             :true-value="1"
             :false-value="0"
           />
-          <i style="margin-left: 10px;">抓取配置已生成，但执行抓取，允许修改抓取配置</i>
+          <i style="margin-left: 10px;">抓取配置已生成，但未执行抓取，允许修改抓取配置</i>
           <Button
             style="position: absolute; top: 0; right: -6px;"
             type="default"
@@ -255,7 +255,31 @@ export default {
   },
   data() {
     return {
-      innerEntity: {},
+      innerEntity: {
+        isBefore: 0,
+        isContent: 0,
+        isProxy: 0,
+        isFilter: 0,
+        onBefore: "",
+        content: "",
+        filePath: "",
+        proxy: "",
+        filter: "",
+        name: "API-" + Date.now(),
+        description: "",
+        host: "",
+        isUsePort: 0,
+        port: "80",
+        path: "",
+        wiki: "",
+        example: "",
+        project: this.projectID,
+        type: "json",
+        isNotRedirect: 0,
+        isNotTunnelHeader: 0,
+        isBeforeRequest: 0,
+        onBeforeRequest: ""
+      },
       isShowBeforeTip: false,
       isShowFilterTip: false,
       isShowBeforeRequestTip: false,
@@ -290,32 +314,6 @@ export default {
   created() {
     if (this.entityID) {
       this.loadEntity();
-    } else {
-      this.innerEntity = {
-        isBefore: 0,
-        isContent: 0,
-        isProxy: 0,
-        isFilter: 0,
-        onBefore: "",
-        content: "",
-        filePath: "",
-        proxy: "",
-        filter: "",
-        name: "API-" + Date.now(),
-        description: "",
-        host: "",
-        isUsePort: 0,
-        port: "80",
-        path: "",
-        wiki: "",
-        example: "",
-        project: this.projectID,
-        type: "json",
-        isNotRedirect: 0,
-        isNotTunnelHeader: 0,
-        isBeforeRequest: 0,
-        onBeforeRequest: ""
-      };
     }
   },
   methods: {
@@ -336,7 +334,11 @@ export default {
           res => {
             responseHandler.call(this, res.body, json => {
               if (json && json.data) {
-                this.innerEntity = json.data;
+                this.innerEntity = Object.assign(
+                  {},
+                  this.innerEntity,
+                  json.data
+                );
               }
             });
           },
