@@ -37,6 +37,16 @@ export default {
 .ui-console ul {
   list-style-type: none;
   margin: 0;
-  padding: 0;
+  padding: 0 10px;
+}
+.ui-console ul li {
+  position: relative;
+  padding-left: 15px;
+}
+.ui-console ul li:before {
+  content: " * ";
+  left: 0;
+  top: 3px;
+  position: absolute;
 }
 </style>
