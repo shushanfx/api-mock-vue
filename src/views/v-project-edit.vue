@@ -5,21 +5,42 @@
         <Input
           v-model="innerEntity.projectID"
           placeholder="请输入项目ID"
-          :readonly="isEdit ? true: false"
+          :readonly="withID ? true: false"
         />
       </FormItem>
       <FormItem label="项目名称">
-        <Input v-model="innerEntity.name" placeholder="项目名称"/>
+        <Input v-model="innerEntity.name" placeholder="项目名称" :readonly="mode === 'view'"/>
       </FormItem>
-      <FormItem label="项目描述">
-        <Input v-model="innerEntity.description" placeholder="项目描述" type="textarea"/>
+      <FormItem label="项目描述" v-if="mode === 'edit'">
+        <Row>
+          <Col span="12">
+            <ace-editor
+              style="border: 1px solid #ccc;"
+              v-model="innerEntity.description"
+              lang="markdown"
+              height="300"
+            ></ace-editor>
+          </Col>
+          <Col span="12">
+            <ui-marked
+              :html="descriptionHTML"
+              style="margin-left: 15px; border: 1px solid #ccc; height: 300px; overflow: auto;"
+            ></ui-marked>
+          </Col>
+        </Row>
+      </FormItem>
+      <FormItem label="项目描述" v-if="mode === 'view'">
+        <ui-marked :html="descriptionHTML" style="border: 1px solid #ccc;"></ui-marked>
       </FormItem>
     </Form>
-    <Row style="margin-bottom: 10px; display: flex; flex-direction: row-reverse">
+    <Row
+      style="margin-bottom: 10px; display: flex; flex-direction: row-reverse"
+      v-if="mode === 'edit'"
+    >
       <Button type="default" style="margin-left: 10px;" @click="onHandleCancel">取消</Button>
       <Button type="primary" style @click="onHandleSave">保存</Button>
     </Row>
-    <Card v-if="isEdit">
+    <Card v-if="mode === 'view'">
       <Row>
         <Button type="primary" @click="onHandleAdd">添加</Button>
         <Button type="default" @click="onHandleDebug">调试</Button>
@@ -53,8 +74,17 @@
 </template>
 
 <script>
+import AceEditor from "vue2-ace-editor";
+import "brace/mode/markdown";
+import "brace/theme/chrome";
 import { mapGetters } from "vuex";
+import { debounce } from "debounce";
+import marked from "marked";
+import highlightJS from "highlight.js";
+import "highlight.js/styles/github.css";
+
 import VMockEdit from "./v-mock-edit";
+import UiMarked from "../components/ui-marked";
 import handleResult from "../utils/responseHandler";
 
 export default {
@@ -62,6 +92,7 @@ export default {
   data() {
     let me = this;
     return {
+      descriptionHTML: "",
       innerEntity: {
         projectID: "",
         name: "",
@@ -311,7 +342,9 @@ export default {
     };
   },
   components: {
-    VMockEdit
+    VMockEdit,
+    AceEditor,
+    UiMarked
   },
   props: {
     entityID: {
@@ -319,7 +352,29 @@ export default {
     },
     projectID: {
       type: String
+    },
+    mode: {
+      type: String,
+      default: "edit"
     }
+  },
+  created() {
+    this.onHandleDescriptionChange = debounce(() => {
+      this.descriptionHTML = marked(this.innerEntity.description, {
+        render: new marked.Renderer(),
+        highlight: code => {
+          return highlightJS.highlightAuto(code).value;
+        },
+        pedantic: false,
+        gfm: true,
+        tables: true,
+        breaks: false,
+        sanitize: false,
+        smartLists: true,
+        smartypants: false,
+        xhtml: false
+      });
+    }, 100);
   },
   mounted() {
     if (this.entityID) {
@@ -327,8 +382,14 @@ export default {
       this.loadRoute();
     }
   },
+  watch: {
+    "innerEntity.description": function() {
+      // console.info(newValue);
+      this.onHandleDescriptionChange();
+    }
+  },
   computed: {
-    isEdit() {
+    withID() {
       return !!this.entityID;
     },
     modalWidth() {
@@ -429,7 +490,7 @@ export default {
     },
     onHandleDebug() {
       this.$refs.url.href =
-        "/mock/console.php?__pid=" + encodeURIComponent(this.projectID || "");
+        "/console/" + encodeURIComponent(this.projectID || "");
       this.$refs.url.click();
     },
     onHandleMockTest(row, isHost) {

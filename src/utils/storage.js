@@ -48,7 +48,7 @@ export class List {
   }
   get list() {
     if (!this.__list) {
-      this.__list = getSessionObject(this.key, []);
+      this.__list = getSessionObject(this.key, []).filter(item => item);
     }
     return this.__list;
   }
@@ -60,7 +60,14 @@ export class List {
         list = list.slice(list.length - this.maxLength);
       }
       if (typeof this.map === 'function') {
-        list = list.map(this.map);
+        list = list.map(this.map).filter(item => item);
+      } else {
+        list = list.map((item) => {
+          if (typeof item === "string") {
+            return item;
+          }
+          return item;
+        }).filter(item => item);
       }
       setSessionStore(this.key, list);
     }

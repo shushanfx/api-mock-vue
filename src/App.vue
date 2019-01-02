@@ -13,7 +13,7 @@
         </Menu>
       </Header>
       <Layout>
-        <Sider hide-trigger :style="{background: '#fff'}">
+        <Sider hide-trigger :style="{background: '#fff'}" v-if="menuStatus === 'open'">
           <Menu theme="light" width="auto" @on-select="onHandleMenu">
             <template v-for="(item,index) in menus">
               <Submenu :key="index" v-if="item.children && item.children.length" :name="item.name">
@@ -148,7 +148,8 @@ export default {
       isShowLogin: "isShowLogin",
       tabList: "getRoutes",
       tabCurrent: "getCurrentRoute",
-      breadCrumb: "getCurrentCrumb"
+      breadCrumb: "getCurrentCrumb",
+      menuStatus: "getMenuStatus"
     })
   },
   methods: {

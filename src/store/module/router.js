@@ -5,14 +5,11 @@ import {
 
 const ROUTE_CACHE = '__mock_api_route_cache';
 const ROUTE_LIST = new StorageList(ROUTE_CACHE);
-ROUTE_LIST.map = (item) => {
-  return item.name;
-}
 
 const hasRouter = function hasRouter(state, route) {
   let routes = state.routes;
   for (let aRoute of routes) {
-    if (route.name === aRoute.name) {
+    if (aRoute && route && route.name === aRoute.name) {
       return true;
     }
   }
@@ -114,7 +111,7 @@ export default {
       if (list.length === 0) {
         ROUTE_LIST.list = list = [router.homeRoute.name];
       }
-      state.routes.push(...list.map(name => router.findByName(name)));
+      state.routes.push(...list.map(name => router.findByName(name)).filter(item => item));
     }
   }
 };

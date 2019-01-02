@@ -53,7 +53,7 @@
       >
         <p slot="header" style="color:#f60;text-align:center">
           <Icon type="ios-information-circle"></Icon>
-          <span>{{entityID ? "编辑项目" : "新建项目"}}</span>
+          <span>{{modalTitle}}</span>
         </p>
         <div>
           <v-project-edit
@@ -124,10 +124,6 @@ export default {
           key: "projectID"
         },
         {
-          title: "描述",
-          key: "description"
-        },
-        {
           title: "修改者",
           key: "modifier"
         },
@@ -165,6 +161,24 @@ export default {
                   }
                 },
                 "编辑"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "info",
+                    size: "small"
+                  },
+                  on: {
+                    click() {
+                      me.doViewEntity(
+                        params.row["_id"],
+                        params.row["projectID"]
+                      );
+                    }
+                  }
+                },
+                "预览"
               ),
               h(
                 "Button",
@@ -272,6 +286,12 @@ export default {
     },
     doGetEntity(_id, projectID) {
       this.entityMode = "edit";
+      this.projectID = projectID;
+      this.entityID = _id;
+      this.modal = true;
+    },
+    doViewEntity(_id, projectID) {
+      this.entityMode = "view";
       this.projectID = projectID;
       this.entityID = _id;
       this.modal = true;
@@ -407,7 +427,16 @@ export default {
   computed: {
     modalWidth() {
       let width = window.innerWidth - 100;
-      return this.entityID ? width : 520;
+      return width;
+    },
+    modalTitle() {
+      let entityMode = this.entityMode;
+      let entityID = this.entityID;
+      if (entityMode === "view") {
+        return "查看项目";
+      } else {
+        return entityID ? "编辑项目" : "新建项目";
+      }
     },
     ...mapGetters({
       username: "getUsername"

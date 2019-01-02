@@ -75,6 +75,9 @@ export const allRoutes = [
     name: 'console',
     label: '控制台',
     icon: 'md-contact',
+    meta: {
+      hideMenu: true
+    },
     component: () => {
       return import("../views/v-console");
     }
@@ -139,6 +142,7 @@ router.beforeEach((to, from, next) => {
   if (router) {
     store.dispatch('guaranteeRoute', name);
   }
+  store.commit('setMenuStatus', to && to.meta && to.meta.hideMenu ? 'close' : 'open');
   next();
 })
 
