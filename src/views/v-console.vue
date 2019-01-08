@@ -1,6 +1,6 @@
 <template>
   <div style="position:relative; margin: -25px;" ref="elContainer">
-    <Row class="btn-area" style="position:absolute; top: 0; right: 0;">
+    <Row class="btn-area" style="position:absolute; top: 0; right: 0; z-index: 10">
       <Button @click="onHandleClear">清屏</Button>
       <Button @click="onHandleScroll">{{isScroll ? "取消滚屏" : "跟随滚动"}}</Button>
     </Row>
