@@ -53,10 +53,11 @@ export default {
       });
       this.socket.on("connect", () => {
         this.list.push("连接成功");
+        this.socket.emit("projectID", this.projectID);
         this.socket.emit(
           "run",
           // "seq -w 1 100000 | while read line; do echo $line; sleep 0.1; done;"
-          "pm2 log mock | grep '" + this.projectID.replace(/'/gi, '"') + "'"
+          "pm2 log mock"
         );
       });
       this.socket.on("disconnect", () => {
