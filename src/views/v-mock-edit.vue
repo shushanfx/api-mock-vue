@@ -166,6 +166,13 @@
         </FormItem>
         <FormItem label="抓取代理">
           <i-switch v-model="innerEntity.isProxy" size="small" :true-value="1" :false-value="0"/>
+          <Button
+            v-if="innerEntity.isProxy"
+            type="primary"
+            style="margin-left: 10px;"
+            size="small"
+            @click="onHandleIP"
+          >使用本机ip</Button>
           <i style="margin-left: 10px;">通过代理抓取页面，效果相当于配置host</i>
         </FormItem>
         <FormItem v-if="innerEntity.isProxy" style="margin-top: -20px;">
@@ -410,7 +417,30 @@ export default {
     onHandleCancel() {
       this.$emit("cancel");
     },
-    onHandlePathChoose() {}
+    onHandlePathChoose() {},
+    onHandleIP() {
+      this.$http.get("/mock/cas/ip.php").then(
+        res => {
+          responseHandler.call(this, res.body, json => {
+            let ip = json.data;
+            let proxy = this.innerEntity.proxy
+              ? this.innerEntity.proxy.trim()
+              : "";
+            if (proxy) {
+              let reg = /^([^:]+):(.+)$/;
+              let arr = reg.exec(proxy);
+              if (arr) {
+                ip = proxy.replace(reg, ip + ":$2");
+              }
+            }
+            this.innerEntity.proxy = ip;
+          });
+        },
+        () => {
+          responseHandler.call(this);
+        }
+      );
+    }
   }
 };
 </script>
