@@ -8,11 +8,14 @@
         <FormItem label="项目标识">
           <Input v-model="innerEntity.project" readonly/>
         </FormItem>
+        <FormItem label="标签">
+          <ui-tag v-model="innerEntity.tag"/>
+        </FormItem>
         <FormItem label="Wiki">
           <Input v-model="innerEntity.wiki" type="text" placeholder="接口的wiki地址"/>
         </FormItem>
         <FormItem label="描述">
-          <Input v-model="innerEntity.desription" type="textarea" placeholder="输入接口的描述信息"/>
+          <Input v-model="innerEntity.description" type="textarea" placeholder="输入接口的描述信息"/>
         </FormItem>
       </Form>
     </Card>
@@ -251,6 +254,7 @@ import "brace/mode/json";
 import "brace/theme/chrome";
 
 import UiEditTip from "../components/ui-edit-tip";
+import UiTag from "../components/ui-tag";
 
 import responseHandler from "../utils/responseHandler";
 
@@ -258,7 +262,8 @@ export default {
   name: "v-mock-edit",
   components: {
     AceEditor,
-    UiEditTip
+    UiEditTip,
+    UiTag
   },
   data() {
     return {
@@ -273,6 +278,7 @@ export default {
         proxy: "",
         filter: "",
         name: "API-" + Date.now(),
+        tag: "",
         description: "",
         host: "",
         isUsePort: 0,
