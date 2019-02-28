@@ -43,6 +43,7 @@
     <Card v-if="mode === 'view'">
       <Row>
         <Button type="primary" @click="onHandleAdd">添加</Button>
+        <Button type="default" @click="loadRoute">刷新</Button>
         <Button type="default" @click="onHandleDebug">调试</Button>
       </Row>
       <Table style="margin-top: 15px; " border :columns="columns" :data="list"></Table>
@@ -203,6 +204,16 @@ export default {
               arr.push(h("p"), null, [
                 h("span", "代理："),
                 h("Tag", params.row.proxy)
+              ]);
+            }
+            if (params.row.tag) {
+              let tags = params.row.tag.split(",");
+              let tagList = [];
+              arr.push(h("p"), null, [
+                h("span", "标签："),
+                ...tags.map(item => {
+                  return h("Tag", item);
+                })
               ]);
             }
             arr.push(h("p"), null, [
