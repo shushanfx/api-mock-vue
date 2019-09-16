@@ -1,58 +1,87 @@
 <template>
   <div class="layout">
     <Layout style="height:100%;">
-      <Header>
+      <Header ref="header">
         <Menu mode="horizontal" theme="dark" active-name="1" @on-select="onHandleMenu">
-          <div class="layout-logo"></div>
+          <div class="layout-logo">
+            <span>{{title}}</span>
+            <subtitle v-if="subtitle">{{subtitle}}</subtitle>
+          </div>
           <div class="layout-nav">
-            <MenuItem v-for="(item,index) in tops" :key="index" :name="item.name">
-              <Icon :type="item.icon"></Icon>
-              {{getTopLabel(item)}}
+            <MenuItem name="user">
+              <Icon type="md-contact" style="margin-left:20px;" />
+              <Dropdown>
+                <span>{{username}}</span>
+                <DropdownMenu slot="list">
+                  <DropdownItem>
+                    <Icon type="md-exit" />登出
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             </MenuItem>
           </div>
         </Menu>
       </Header>
-      <Layout>
+      <Layout ref="content" :style="contentStyle">
         <Sider hide-trigger :style="{background: '#fff'}" v-if="menuStatus === 'open'">
-          <Menu theme="light" width="auto" @on-select="onHandleMenu">
+          <Menu
+            ref="leftMenu"
+            theme="light"
+            width="auto"
+            @on-select="onHandleMenu"
+            :active-name="activeName"
+            :open-names="openNames"
+          >
             <template v-for="(item,index) in menus">
               <Submenu :key="index" v-if="item.children && item.children.length" :name="item.name">
                 <template slot="title">
                   <Icon type="ios-navigate"></Icon>
-                  {{item.label}}
+                  <Badge class="my-menu-badge">
+                    <a class="my-menu-item">{{item.label}}</a>
+                  </Badge>
                 </template>
                 <MenuItem
                   :key="jndex"
                   v-for="(jtem,jndex) in item.children"
-                  @select="onHandleMenu(item)"
+                  @select="onHandleMenu(jtem)"
                   :name="jtem.name"
                 >
                   <Icon v-if="jtem.icon" :type="jtem.icon"></Icon>
-                  {{jtem.label}}
+                  <Badge :count="jtem.count" class="my-menu-badge">
+                    <a class="my-menu-item">{{item.label}}</a>
+                  </Badge>
                 </MenuItem>
               </Submenu>
               <MenuItem v-else :name="item.name" :key="index" @select="onHandleMenu(item)">
                 <Icon :key="index" v-if="item.icon" :type="item.icon"></Icon>
-                {{item.label}}
+                <Badge class="my-menu-badge">
+                  <a class="my-menu-item">{{item.label}}</a>
+                </Badge>
               </MenuItem>
             </template>
           </Menu>
         </Sider>
-        <Layout :style="{padding: '0 24px 0'}">
-          <ui-tab
-            :list="tabList"
-            :current="tabCurrent"
-            @refresh="onHandleTabRefresh"
-            @select="onHandleTabChange"
-            @remove="onHandleTabRemove"
-          ></ui-tab>
-          <ui-bread-crumb :list="breadCrumb"/>
-          <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
-            <router-view :key="tabCurrent.key"/>
+        <Layout
+          :style="{padding: '0 0 0 24px', position: 'relative', height: '100%', overflow: 'hidden'}"
+        >
+          <div>
+            <ui-tab
+              :list="tabList"
+              :current="tabCurrent"
+              @refresh="onHandleTabRefresh"
+              @select="onHandleTabChange"
+              @remove="onHandleTabRemove"
+            ></ui-tab>
+            <ui-bread-crumb :list="breadCrumb" />
+          </div>
+          <Content
+            :style="{padding: '10px 24px 20px 24px', height: '100%', background: '#fff', overflow: 'scroll'}"
+          >
+            <router-view :key="tabCurrent.key" />
           </Content>
         </Layout>
       </Layout>
-      <Footer class="layout-footer-center">{{year}} &copy; Mock API</Footer>
+      <Footer ref="footer" class="layout-footer-center my-footer-class" v-html="footer"></Footer>
     </Layout>
     <Modal
       ref="formLogin"
@@ -63,10 +92,10 @@
     >
       <Form :model="user" label-position="right">
         <FormItem label="用户名" required :label-width="80">
-          <Input v-model="user.username" autocomplete="on"/>
+          <Input v-model="user.username" autocomplete="on" />
         </FormItem>
         <FormItem label="密码" required :label-width="80">
-          <Input v-model="user.password" type="password"/>
+          <Input v-model="user.password" type="password" />
         </FormItem>
         <div>{{user.message}}</div>
       </Form>
@@ -78,7 +107,7 @@
   </div>
 </template>
 
-<style scoped>
+<style>
 .layout {
   border: 1px solid #d7dde4;
   background: #f5f7f9;
@@ -89,29 +118,30 @@
   width: 100%;
 }
 .layout-logo {
-  width: 200px;
-  height: 30px;
-  float: left;
-  position: relative;
-  top: 15px;
+  position: absolute;
   left: -10px;
 }
-.layout-logo:after {
-  content: "Mock System";
-  position: absolute;
-  top: 0;
-  left: 8px;
+.layout-logo > span {
   color: whitesmoke;
   font-size: 30px;
-  line-height: 30px;
+  line-height: 60px;
+}
+.layout-logo > subtitle {
+  font-size: 16px;
+  color: white;
+  padding-left: 10px;
+  font-weight: 200;
+  font-family: sans-serif;
+  font-style: italic;
 }
 .layout-nav {
   margin-right: -30px;
   position: absolute;
   right: 0px;
 }
-.layout-footer-center {
+.my-footer-class {
   text-align: center;
+  padding: 15px;
 }
 </style>
 
@@ -122,6 +152,9 @@ import "@assets/css/base.css";
 import { routes, topRoutes, findByName } from "./router";
 import UiTab from "./components/ui-tab";
 import UiBreadCrumb from "./components/ui-broad-crumb";
+import config from "@/../config/default";
+import { vueReplace } from "./utils/stringUtils";
+import { throttle } from "lodash";
 
 export default {
   components: {
@@ -132,6 +165,9 @@ export default {
     let date = new Date();
     return {
       year: date.getFullYear(),
+      title: config.title,
+      footer: config.footer,
+      subtitle: config.subtitle,
       menus: routes,
       tops: topRoutes,
       routeID: 0,
@@ -139,7 +175,8 @@ export default {
         username: "",
         password: "",
         message: ""
-      }
+      },
+      contentStyle: {}
     };
   },
   computed: {
@@ -150,7 +187,22 @@ export default {
       tabCurrent: "getCurrentRoute",
       breadCrumb: "getCurrentCrumb",
       menuStatus: "getMenuStatus"
-    })
+    }),
+    activeName() {
+      return this.$route.name;
+    },
+    openNames() {
+      if (
+        this.$route &&
+        this.$route.matched &&
+        this.$route.matched.length > 0
+      ) {
+        return this.$route.matched.map(item => {
+          return item.name;
+        });
+      }
+      return [];
+    }
   },
   methods: {
     onHandleMenu(item) {
@@ -161,6 +213,11 @@ export default {
     },
     onHandleTabChange(item) {
       this.$store.commit("pushRoute", item);
+      if (this.$refs.leftMenu) {
+        this.$nextTick(() => {
+          this.$refs.leftMenu.updateOpened();
+        });
+      }
     },
     onHandleTabRemove(item) {
       this.$store.commit("removeRoute", item);
@@ -177,7 +234,7 @@ export default {
         this.message = "密码不能为空";
       } else {
         this.$http
-          .post("/mock/cas/login.php", {
+          .post("cas/login.php", {
             username,
             password
           })
@@ -218,8 +275,41 @@ export default {
       return item.label;
     }
   },
+  created() {
+    if (this.title) {
+      // 对title进行替换
+      this.title = vueReplace(this.title, this.$data);
+    }
+    if (this.footer) {
+      // 对footer进行替换
+      this.footer = vueReplace(this.footer, this.$data);
+    }
+    if (this.subtitle) {
+      this.subtitle = vueReplace(this.subtitle, this.$data);
+    }
+  },
   mounted() {
+    document.title = config.title;
     this.$store.dispatch("getUser");
+    this.onHandleResize = throttle(() => {
+      let header = this.$refs.header;
+      let content = this.$refs.content;
+      let footer = this.$refs.footer;
+      if (header && content && footer) {
+        let height = window.innerHeight || window.clientHeight;
+        let height1 = header.$el.clientHeight || header.$el.height || 0;
+        let height2 = footer.$el.clientHeight || footer.$el.height || 0;
+        this.contentStyle = {
+          height: `${height - height1 - height2}px`,
+          overflow: "hidden"
+        };
+      }
+    }, 200);
+    this.onHandleResize();
+    window.addEventListener("resize", this.onHandleResize, false);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.onHandleResize);
   }
 };
 </script>

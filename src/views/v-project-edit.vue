@@ -9,7 +9,7 @@
         />
       </FormItem>
       <FormItem label="项目名称">
-        <Input v-model="innerEntity.name" placeholder="项目名称" :readonly="mode === 'view'"/>
+        <Input v-model="innerEntity.name" placeholder="项目名称" :readonly="mode === 'view'" />
       </FormItem>
       <FormItem label="项目描述" v-if="mode === 'edit'">
         <Row>
@@ -208,7 +208,6 @@ export default {
             }
             if (params.row.tag) {
               let tags = params.row.tag.split(",");
-              let tagList = [];
               arr.push(h("p"), null, [
                 h("span", "标签："),
                 ...tags.map(item => {
@@ -228,6 +227,7 @@ export default {
           key: "isFilter",
           render(h, params) {
             let creator = params.row.creator;
+            let isProxy = params.row.isProxy;
             let rowPrev = me.list[params.index - 1];
             let rowNext = me.list[params.index + 1];
             return h("div", null, [
@@ -342,6 +342,24 @@ export default {
                   }
                 },
                 "域名测试"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small"
+                  },
+                  style: {
+                    display: isProxy ? "" : "none"
+                  },
+                  on: {
+                    click() {
+                      me.onHandleIP(params.row);
+                    }
+                  }
+                },
+                "使用本机代理"
               )
             ]);
           }
@@ -451,6 +469,40 @@ export default {
     },
     onHandleMockCancel() {
       this.modal = false;
+    },
+    onHandleIP(row) {
+      this.$http.get("/mock/cas/ip.php").then(
+        res => {
+          handleResult.call(this, res.body, json => {
+            let ip = json.data;
+            let proxy = row.proxy ? row.proxy.trim() : "";
+            if (proxy) {
+              let reg = /^([^:]+):(.+)$/;
+              let arr = reg.exec(proxy);
+              if (arr) {
+                ip = proxy.replace(reg, ip + ":$2");
+              }
+            }
+            this.$http
+              .put("/mock/be/save.php", {
+                _id: row._id,
+                name: row.name,
+                proxy: ip
+              })
+              .then(
+                res => {
+                  this.loadRoute();
+                },
+                () => {
+                  handleResult.call(this);
+                }
+              );
+          });
+        },
+        () => {
+          handleResult.call(this);
+        }
+      );
     },
     onHandleMockDelete(_id, path) {
       this.$Modal.confirm({
