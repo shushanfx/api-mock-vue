@@ -3,6 +3,7 @@ import Vue from 'vue';
 export default {
   state: {
     isShowLogin: false,
+    isLogin: false,
     user: {
 
     },
@@ -11,6 +12,9 @@ export default {
   getters: {
     isShowLogin(state) {
       return state.isShowLogin;
+    },
+    isLogin(state) {
+      return state.isLogin;
     },
     getUser(state) {
       return state.user;
@@ -29,6 +33,11 @@ export default {
     setUser(state, user) {
       state.user = user;
       state.username = user.username || 'Guest';
+      if (user && user.username) {
+        state.isLogin = true;
+      } else {
+        state.isLogin = false;
+      }
     }
   },
   actions: {

@@ -5,15 +5,15 @@
         <Menu mode="horizontal" theme="dark" active-name="1" @on-select="onHandleMenu">
           <div class="layout-logo">
             <span>{{title}}</span>
-            <subtitle v-if="subtitle">{{subtitle}}</subtitle>
+            <span class="subtitle" v-if="subtitle">{{subtitle}}</span>
           </div>
           <div class="layout-nav">
             <MenuItem name="user">
               <Icon type="md-contact" style="margin-left:20px;" />
-              <Dropdown>
+              <Dropdown @on-click="onHandleDropdown">
                 <span>{{username}}</span>
-                <DropdownMenu slot="list">
-                  <DropdownItem>
+                <DropdownMenu slot="list" v-if="isLogin">
+                  <DropdownItem name="logout">
                     <Icon type="md-exit" />登出
                   </DropdownItem>
                 </DropdownMenu>
@@ -86,7 +86,7 @@
     <Modal
       ref="formLogin"
       title="用户登陆"
-      v-model="isShowLogin"
+      :value="isShowLogin"
       :z-index="9999"
       @on-cancel="onHandleLoginCancel"
     >
@@ -126,7 +126,7 @@
   font-size: 30px;
   line-height: 60px;
 }
-.layout-logo > subtitle {
+.layout-logo .subtitle {
   font-size: 16px;
   color: white;
   padding-left: 10px;
@@ -142,6 +142,10 @@
 .my-footer-class {
   text-align: center;
   padding: 15px;
+}
+.ivu-modal {
+  margin-bottom: 40px !important;
+  top: 40px;
 }
 </style>
 
@@ -182,6 +186,7 @@ export default {
   computed: {
     ...mapGetters({
       username: "getUsername",
+      isLogin: "isLogin",
       isShowLogin: "isShowLogin",
       tabList: "getRoutes",
       tabCurrent: "getCurrentRoute",
@@ -234,7 +239,7 @@ export default {
         this.message = "密码不能为空";
       } else {
         this.$http
-          .post("cas/login.php", {
+          .post("/mock/cas/login.php", {
             username,
             password
           })
@@ -261,6 +266,30 @@ export default {
           );
       }
       return false;
+    },
+    onHandleDropdown(name) {
+      if (name === "logout") {
+        this.onHandleLogout();
+      }
+    },
+    onHandleLogout() {
+      this.$http.post("/mock/cas/logout.php").then(
+        res => {
+          if (res && res.ok) {
+            let data = res.body;
+            if (data && data.code === 1) {
+              location.reload(true);
+            } else {
+              this.user.message = data.message;
+            }
+          } else {
+            this.user.message = "网络异常！";
+          }
+        },
+        () => {
+          this.user.message = "网络异常！";
+        }
+      );
     },
     onHandleLoginCancel() {
       this.user.username = "";
