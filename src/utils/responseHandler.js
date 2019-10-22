@@ -2,7 +2,7 @@ export default function (json, handler) {
   if (typeof json === "object" && json) {
     if (json.code === -512) {
       // LOGIN 校验
-      this.$store.commit('showLogin');
+      location.href = "/mock/cas/login.php?redirect=" + encodeURIComponent(location.href);
     } else if (json.code < 0) {
       // 操作失败
       this.$Message.error({
