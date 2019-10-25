@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import VueResource from 'vue-resource'
+import VueResource from 'vue-resource';
+import SomyCas from 'somy-vue-cas';
 import iview from 'iview'
 import 'iview/dist/styles/iview.css'
 
@@ -9,6 +10,7 @@ import store from './store'
 
 Vue.use(iview)
 Vue.use(VueResource)
+Vue.use(SomyCas)
 
 Vue.config.productionTip = false;
 store.dispatch('initRoute');

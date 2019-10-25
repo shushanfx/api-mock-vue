@@ -14,3 +14,49 @@ html [type=button] {
 .ivu-input:read-only {
   background-color: gainsboro;
 }
+
+.layout {
+  border: 1px solid #d7dde4;
+  background: #f5f7f9;
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+.layout-logo {
+  position: absolute;
+  left: -10px;
+}
+
+.layout-logo>span {
+  color: whitesmoke;
+  font-size: 30px;
+  line-height: 60px;
+}
+
+.layout-logo .subtitle {
+  font-size: 16px;
+  color: white;
+  padding-left: 10px;
+  font-weight: 200;
+  font-family: sans-serif;
+  font-style: italic;
+}
+
+.layout-nav {
+  margin-right: -30px;
+  position: absolute;
+  right: 0px;
+}
+
+.my-footer-class {
+  text-align: center;
+  padding: 15px;
+}
+
+.ivu-modal {
+  margin-bottom: 40px !important;
+  top: 40px;
+}

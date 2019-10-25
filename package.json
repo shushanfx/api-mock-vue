@@ -17,6 +17,7 @@
     "moment": "^2.23.0",
     "postcss-loader": "^3.0.0",
     "socket.io-client": "^2.2.0",
+    "somy-vue-cas": "^1.1.0",
     "style-loader": "^0.23.1",
     "vue": "^2.5.17",
     "vue-resource": "^1.5.1",
