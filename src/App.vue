@@ -231,23 +231,13 @@ export default {
       }
     },
     onHandleLogout() {
-      this.$http.post("/mock/cas/logout.php").then(
-        res => {
-          if (res && res.ok) {
-            let data = res.body;
-            if (data && data.code === 1) {
-              location.reload(true);
-            } else {
-              this.user.message = data.message;
-            }
-          } else {
-            this.user.message = "网络异常！";
-          }
-        },
-        () => {
-          this.user.message = "网络异常！";
+      this.$Modal.confirm({
+        title: "退出登录",
+        content: "您确定要退出登陆？",
+        onOk() {
+          location.href = "/mock/cas/logout.php";
         }
-      );
+      });
     },
     onHandleLoginCancel() {
       this.user.username = "";

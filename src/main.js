@@ -10,7 +10,9 @@ import store from './store'
 
 Vue.use(iview)
 Vue.use(VueResource)
-Vue.use(SomyCas)
+Vue.use(SomyCas, {
+  loginPath: "/mock/cas/login.php"
+})
 
 Vue.config.productionTip = false;
 store.dispatch('initRoute');
